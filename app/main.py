@@ -8,8 +8,9 @@ from fastapi.middleware.cors import CORSMiddleware
 # Lifespan context manager (replaces on_event)
 @asynccontextmanager
 async def lifespan(app_: FastAPI):
-    # Database initialization - using synchronous approach with SQLAlchemy
-    Base.metadata.create_all(bind=engine)
+    # Database initialization - using async approach with SQLAlchemy
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
     yield
     # Cleanup (if needed)
 
